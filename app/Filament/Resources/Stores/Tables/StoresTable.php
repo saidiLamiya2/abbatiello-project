@@ -6,6 +6,8 @@ use App\Enums\ProjectType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -95,6 +97,10 @@ class StoresTable
             ])
             ->actions([
                 EditAction::make(),
+                DeleteAction::make()
+                    ->visible(fn ($record) => auth()->user()->hasAnyRole(['super_admin', 'admin']) && ! $record->trashed()),
+                RestoreAction::make()
+                    ->visible(fn ($record) => auth()->user()->hasAnyRole(['super_admin', 'admin']) && $record->trashed()),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
