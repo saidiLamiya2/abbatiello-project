@@ -1,0 +1,16 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Montserrat:wght@300;400;500;600&display=swap');
+
+:root {
+    --font-family: 'Montserrat', sans-serif;
+}
+
+h1, h2, h3, .fi-header-heading, .fi-section-header-heading {
+    font-family: 'Cormorant Garamond', serif !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.08em !important;
+}
