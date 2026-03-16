@@ -45,7 +45,7 @@
         }
 
         .dash-card--info       { background: #F97316; }
-        .dash-card--harassment { background: #111; }
+        .dash-card--harassment { background: #93c5fd; }
         .dash-card--holidays   { background: #22C55E; }
 
         /* ── Calendar ── */
