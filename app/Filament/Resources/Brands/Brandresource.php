@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Gate;
 
 class BrandResource extends Resource
 {
@@ -26,7 +27,7 @@ class BrandResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole(['super_admin', 'admin']);
+        return Gate::allows('viewAny', static::$model);
     }
 
     public static function form(Schema $form): Schema

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Stores\Schemas;
 
+use App\Enums\ProjectType;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -145,12 +146,7 @@ class StoreForm
                     ->schema([
                         Select::make('project_type')
                             ->label(__('app.stores.project_type'))
-                            ->options([
-                                'Nouveau' => 'Nouveau',
-                                'Corpo'   => 'Corpo',
-                                'Reprise' => 'Reprise',
-                                'Vente'   => 'Vente',
-                            ])
+                            ->options(ProjectType::options())
                             ->nullable()
                             ->columnSpan(1),
 

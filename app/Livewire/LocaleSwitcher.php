@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use Illuminate\Support\Facades\App;
+use App\Services\LocaleService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -10,20 +10,16 @@ class LocaleSwitcher extends Component
 {
     public string $locale;
 
-    public function mount(): void
+    public function mount(LocaleService $localeService): void
     {
-        $this->locale = Auth::user()->locale ?? config('app.locale', 'fr');
+        $this->locale = $localeService->resolveFor(Auth::user());
     }
 
-    public function switchLocale(string $locale): void
+    public function switchLocale(string $locale, LocaleService $localeService): void
     {
-        if (!in_array($locale, ['fr', 'en'])) {
-            return;
-        }
+        $localeService->switchFor(Auth::user(), $locale);
 
-        Auth::user()->update(['locale' => $locale]);
         $this->locale = $locale;
-        App::setLocale($locale);
 
         $this->redirect(request()->header('Referer') ?? '/admin');
     }

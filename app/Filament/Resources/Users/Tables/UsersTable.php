@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Enums\UserRole;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -63,13 +64,9 @@ class UsersTable
                 TextColumn::make('roles.name')
                     ->label(__('app.users.role'))
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'super_admin' => 'danger',
-                        'admin'       => 'warning',
-                        'manager'     => 'info',
-                        'employee'    => 'gray',
-                        default       => 'gray',
-                    }),
+                    ->color(fn (string $state): string =>
+                        UserRole::tryFrom($state)?->color() ?? 'gray'
+                    ),
 
                 IconColumn::make('is_active')
                     ->label(__('app.users.is_active'))

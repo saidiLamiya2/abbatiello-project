@@ -5,23 +5,14 @@ namespace App\Filament\Resources\Themes;
 use App\Filament\Resources\Themes\Pages\CreateTheme;
 use App\Filament\Resources\Themes\Pages\EditTheme;
 use App\Filament\Resources\Themes\Pages\ListThemes;
+use App\Filament\Resources\Themes\Schemas\ThemeForm;
+use App\Filament\Resources\Themes\Tables\ThemesTable;
 use App\Models\Theme;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\RestoreAction;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Gate;
 
 class ThemeResource extends Resource
 {
@@ -35,102 +26,17 @@ class ThemeResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasRole('super_admin');
+        return Gate::allows('viewAny', static::$model);
     }
 
     public static function form(Schema $form): Schema
     {
-        return $form->schema([
-
-            Section::make(__('app.themes.identity'))
-                ->schema([
-                    TextInput::make('name')
-                        ->label(__('app.themes.name_label'))
-                        ->required()
-                        ->maxLength(100)
-                        ->placeholder(__('app.themes.name_placeholder')),
-                ]),
-
-            Section::make(__('app.themes.colors'))
-                ->columns(2)
-                ->schema([
-                    ColorPicker::make('primary_color')
-                        ->label(__('app.themes.primary_color'))
-                        ->required()
-                        ->helperText(__('app.themes.primary_helper')),
-
-                    ColorPicker::make('secondary_color')
-                        ->label(__('app.themes.secondary_color'))
-                        ->required(),
-                ]),
-
-            Section::make(__('app.themes.typography'))
-                ->columns(2)
-                ->schema([
-                    TextInput::make('font_family')
-                        ->label(__('app.themes.font_family'))
-                        ->required()
-                        ->default('Inter')
-                        ->placeholder('Inter, Poppins, Roboto…'),
-
-                    Select::make('filament_color')
-                        ->label(__('app.themes.filament_palette'))
-                        ->required()
-                        ->default('rose')
-                        ->options([
-                            'slate'  => 'Slate',  'gray'   => 'Gray',   'zinc'   => 'Zinc',
-                            'red'    => 'Red',    'orange' => 'Orange', 'amber'  => 'Amber',
-                            'yellow' => 'Yellow', 'lime'   => 'Lime',   'green'  => 'Green',
-                            'teal'   => 'Teal',   'cyan'   => 'Cyan',   'sky'    => 'Sky',
-                            'blue'   => 'Blue',   'indigo' => 'Indigo', 'violet' => 'Violet',
-                            'purple' => 'Purple', 'rose'   => 'Rose',
-                        ])
-                        ->helperText(__('app.themes.palette_helper')),
-                ]),
-        ]);
+        return ThemeForm::configure($form);
     }
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                TextColumn::make('name')
-                    ->label(__('app.themes.name'))
-                    ->searchable()
-                    ->sortable(),
-
-                ColorColumn::make('primary_color')
-                    ->label(__('app.themes.primary_label')),
-
-                ColorColumn::make('secondary_color')
-                    ->label(__('app.themes.secondary_label')),
-
-                TextColumn::make('font_family')
-                    ->label(__('app.themes.font_family')),
-
-                TextColumn::make('filament_color')
-                    ->label(__('app.themes.palette_label'))
-                    ->badge(),
-
-                TextColumn::make('brands_count')
-                    ->label(__('app.themes.brands_count'))
-                    ->counts('brands')
-                    ->sortable(),
-            ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
-            ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
-                RestoreAction::make()
-                    ->visible(fn ($record) => $record->trashed()),
-            ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+        return ThemesTable::configure($table);
     }
 
     public static function getPages(): array

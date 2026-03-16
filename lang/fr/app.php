@@ -203,6 +203,23 @@ return [
         'brands_count'       => 'Marques',
     ],
 
+
+    // ── Enums ──────────────────────────────────────────────
+    'enums' => [
+        'project_type' => [
+            'nouveau' => 'Nouveau',
+            'corpo'   => 'Corpo',
+            'reprise' => 'Reprise',
+            'vente'   => 'Vente',
+        ],
+        'role' => [
+            'super_admin' => 'Super Admin',
+            'admin'       => 'Administrateur',
+            'manager'     => 'Gestionnaire',
+            'employee'    => 'Employé',
+        ],
+    ],
+
     // ── Validation ─────────────────────────────────────────
     'validation' => [
         'required'         => 'Ce champ est obligatoire.',

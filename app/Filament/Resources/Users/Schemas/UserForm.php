@@ -2,8 +2,9 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
+use App\Enums\UserLocale;
+use App\Enums\UserRole;
+use Filament\Forms\Components\DatePicker;use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
@@ -21,15 +22,18 @@ class UserForm
                 ->schema([
                     Select::make('brand_id')
                         ->label(__('app.users.brand'))
-                        ->required()
+                        ->required(fn (callable $get): bool => in_array(
+                            $get('role'),
+                            [UserRole::Manager->value, UserRole::Employee->value]
+                        ))
                         ->live()
-                        ->default(fn () => auth()->user()->hasRole('manager')
+                        ->default(fn () => auth()->user()->hasRole(UserRole::Manager->value)
                             ? auth()->user()->brand_id
                             : null
                         )
                         ->dehydrated(true)
                         ->options(function () {
-                            if (auth()->user()->hasRole('manager')) {
+                            if (auth()->user()->hasRole(UserRole::Manager->value)) {
                                 return \App\Models\Brand::where('id', auth()->user()->brand_id)
                                     ->pluck('name', 'id');
                             }
@@ -39,13 +43,16 @@ class UserForm
 
                     Select::make('store_id')
                         ->label(__('app.users.store'))
-                        ->required()
-                        ->default(fn () => auth()->user()->hasRole('manager')
+                        ->required(fn (callable $get): bool => in_array(
+                            $get('role'),
+                            [UserRole::Manager->value, UserRole::Employee->value]
+                        ))
+                        ->default(fn () => auth()->user()->hasRole(UserRole::Manager->value)
                             ? auth()->user()->store_id
                             : null
                         )
                         ->options(function (callable $get) {
-                            if (auth()->user()->hasRole('manager')) {
+                            if (auth()->user()->hasRole(UserRole::Manager->value)) {
                                 return \App\Models\Store::where('id', auth()->user()->store_id)
                                     ->pluck('name', 'id');
                             }
@@ -84,8 +91,8 @@ class UserForm
 
                     Select::make('locale')
                         ->label(__('app.users.locale'))
-                        ->options(['fr' => 'Français', 'en' => 'English'])
-                        ->default('fr')
+                        ->options(UserLocale::options())
+                        ->default(UserLocale::French->value)
                         ->required(),
 
                     DatePicker::make('birth_date')
@@ -101,15 +108,16 @@ class UserForm
                         ->label(__('app.users.role'))
                         ->options(function () {
                             $user = auth()->user();
-                            if ($user->hasRole('super_admin')) {
-                                return Role::pluck('name', 'name');
+                            if ($user->hasRole(UserRole::SuperAdmin->value)) {
+                                return UserRole::options();
                             }
-                            if ($user->hasRole('admin')) {
-                                return Role::whereNotIn('name', ['super_admin'])->pluck('name', 'name');
+                            if ($user->hasRole(UserRole::Admin->value)) {
+                                return UserRole::optionsExcluding(UserRole::SuperAdmin);
                             }
-                            return Role::where('name', 'employee')->pluck('name', 'name');
+                            return UserRole::optionsExcluding(UserRole::SuperAdmin, UserRole::Admin, UserRole::Manager);
                         })
                         ->required()
+                        ->live()
                         ->dehydrated(false)
                         ->helperText(__('app.users.role_helper'))
                         ->afterStateHydrated(function ($state, $record, callable $set) {

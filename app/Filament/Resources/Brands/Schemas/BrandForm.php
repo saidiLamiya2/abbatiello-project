@@ -46,7 +46,14 @@ class BrandForm
                             ->visibility('public')
                             ->maxSize(2048)
                             ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/svg+xml'])
-                            ->helperText(__('app.brands.logo_helper')),
+                            ->helperText(__('app.brands.logo_helper'))
+                            ->preserveFilenames()
+                            ->imagePreviewHeight('80')
+                            ->panelAspectRatio('2:1')
+                            ->panelLayout('integrated')
+                            ->removeUploadedFileButtonPosition('right')
+                            ->uploadButtonPosition('left')
+                            ->uploadProgressIndicatorPosition('left'),
 
                         FileUpload::make('favicon')
                             ->label(__('app.brands.favicon'))
@@ -56,7 +63,14 @@ class BrandForm
                             ->visibility('public')
                             ->maxSize(512)
                             ->acceptedFileTypes(['image/png', 'image/x-icon', 'image/svg+xml'])
-                            ->helperText(__('app.brands.favicon_helper')),
+                            ->helperText(__('app.brands.favicon_helper'))
+                            ->preserveFilenames()
+                            ->imagePreviewHeight('80')
+                            ->panelAspectRatio('2:1')
+                            ->panelLayout('integrated')
+                            ->removeUploadedFileButtonPosition('right')
+                            ->uploadButtonPosition('left')
+                            ->uploadProgressIndicatorPosition('left'),
                     ]),
 
                 Section::make(__('app.brands.design_section'))

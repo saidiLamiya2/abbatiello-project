@@ -13,6 +13,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Gate;
 
 class StoreResource extends Resource
 {
@@ -27,7 +28,7 @@ class StoreResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole(['super_admin', 'admin', 'manager']);
+        return Gate::allows('viewAny', static::$model);
     }
 
     public static function form(Schema $form): Schema

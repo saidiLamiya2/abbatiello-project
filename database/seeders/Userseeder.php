@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Brand;
 use App\Models\Store;
 use App\Models\User;
+use App\Enums\UserRole;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,6 +23,7 @@ class UserSeeder extends Seeder
         $users = [
 
             // ── super_admin ──────────────────────────────────────────────────
+            // No brand_id, no store_id — platform operator
             [
                 'data' => [
                     'brand_id'   => null,
@@ -34,10 +36,11 @@ class UserSeeder extends Seeder
                     'is_active'  => true,
                     'locale'     => 'fr',
                 ],
-                'role' => 'super_admin',
+                'role' => UserRole::SuperAdmin->value,
             ],
 
             // ── admin — Salvatoré ────────────────────────────────────────────
+            // Brand-level — manages the entire SAL network, no specific store
             [
                 'data' => [
                     'brand_id'   => $sal->id,
@@ -52,10 +55,11 @@ class UserSeeder extends Seeder
                     'birth_date' => '1975-06-20',
                     'locale'     => 'fr',
                 ],
-                'role' => 'admin',
+                'role' => UserRole::Admin->value,
             ],
 
             // ── admin — Crèmerie Chez Mamie ──────────────────────────────────
+            // Brand-level — manages the entire CCM network, no specific store
             [
                 'data' => [
                     'brand_id'   => $ccm->id,
@@ -70,7 +74,7 @@ class UserSeeder extends Seeder
                     'birth_date' => '1980-03-12',
                     'locale'     => 'fr',
                 ],
-                'role' => 'admin',
+                'role' => UserRole::Admin->value,
             ],
 
             // ── manager — Salvatoré Évènementiel ────────────────────────────
@@ -88,7 +92,7 @@ class UserSeeder extends Seeder
                     'birth_date' => '1982-09-14',
                     'locale'     => 'fr',
                 ],
-                'role' => 'manager',
+                'role' => UserRole::Manager->value,
             ],
 
             // ── manager — SAL-Lebourgneuf ────────────────────────────────────
@@ -106,7 +110,7 @@ class UserSeeder extends Seeder
                     'birth_date' => '1985-04-22',
                     'locale'     => 'fr',
                 ],
-                'role' => 'manager',
+                'role' => UserRole::Manager->value,
             ],
 
             // ── manager — CCM Saint-Anselme ──────────────────────────────────
@@ -124,7 +128,7 @@ class UserSeeder extends Seeder
                     'birth_date' => '1978-11-30',
                     'locale'     => 'fr',
                 ],
-                'role' => 'manager',
+                'role' => UserRole::Manager->value,
             ],
 
             // ── manager — CCM Beauport ───────────────────────────────────────
@@ -142,7 +146,7 @@ class UserSeeder extends Seeder
                     'birth_date' => '1983-02-08',
                     'locale'     => 'fr',
                 ],
-                'role' => 'manager',
+                'role' => UserRole::Manager->value,
             ],
 
             // ── employee — active (SAL Évènementiel) ────────────────────────
@@ -160,7 +164,7 @@ class UserSeeder extends Seeder
                     'birth_date' => '1999-03-15',
                     'locale'     => 'fr',
                 ],
-                'role' => 'employee',
+                'role' => UserRole::Employee->value,
             ],
 
             // ── employee — work stoppage (SAL Évènementiel) ─────────────────
@@ -181,7 +185,7 @@ class UserSeeder extends Seeder
                     'birth_date'               => '1993-08-30',
                     'locale'                   => 'fr',
                 ],
-                'role' => 'employee',
+                'role' => UserRole::Employee->value,
             ],
 
             // ── employee — terminated (SAL-Lebourgneuf) ─────────────────────
@@ -201,7 +205,7 @@ class UserSeeder extends Seeder
                     'birth_date'         => '1997-05-20',
                     'locale'             => 'fr',
                 ],
-                'role' => 'employee',
+                'role' => UserRole::Employee->value,
             ],
 
             // ── employee — active (CCM Saint-Anselme) ───────────────────────
@@ -219,7 +223,7 @@ class UserSeeder extends Seeder
                     'birth_date' => '2001-01-18',
                     'locale'     => 'fr',
                 ],
-                'role' => 'employee',
+                'role' => UserRole::Employee->value,
             ],
 
             // ── employee — active (CCM Beauport) ────────────────────────────
@@ -237,7 +241,7 @@ class UserSeeder extends Seeder
                     'birth_date' => '2000-06-11',
                     'locale'     => 'fr',
                 ],
-                'role' => 'employee',
+                'role' => UserRole::Employee->value,
             ],
         ];
 
@@ -247,6 +251,7 @@ class UserSeeder extends Seeder
                 $entry['data']
             );
 
+            // syncRoles() enforces one-role-at-a-time — same as the Filament form
             $user->syncRoles([$entry['role']]);
         }
 

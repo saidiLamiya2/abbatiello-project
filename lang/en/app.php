@@ -203,6 +203,23 @@ return [
         'brands_count'     => 'Brands',
     ],
 
+
+    // ── Enums ──────────────────────────────────────────────
+    'enums' => [
+        'project_type' => [
+            'nouveau' => 'New',
+            'corpo'   => 'Corporate',
+            'reprise' => 'Takeover',
+            'vente'   => 'For Sale',
+        ],
+        'role' => [
+            'super_admin' => 'Super Admin',
+            'admin'       => 'Administrator',
+            'manager'     => 'Manager',
+            'employee'    => 'Employee',
+        ],
+    ],
+
     // ── Validation ─────────────────────────────────────────
     'validation' => [
         'required'         => 'This field is required.',

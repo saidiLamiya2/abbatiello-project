@@ -11,6 +11,7 @@ use App\Models\User;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Gate;
 
 class UserResource extends Resource
 {
@@ -25,17 +26,7 @@ class UserResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole(['super_admin', 'admin', 'manager']);
-    }
-
-    public static function canDelete(\Illuminate\Database\Eloquent\Model $record): bool
-    {
-        return auth()->user()->hasAnyRole(['super_admin', 'admin']);
-    }
-
-    public static function canDeleteAny(): bool
-    {
-        return auth()->user()->hasAnyRole(['super_admin', 'admin']);
+        return Gate::allows('viewAny', static::$model);
     }
 
     public static function form(Schema $form): Schema

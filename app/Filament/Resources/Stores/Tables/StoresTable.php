@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Stores\Tables;
 
+use App\Enums\ProjectType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -31,7 +32,6 @@ class StoresTable
                 TextColumn::make('brand.tag')
                     ->label(__('app.stores.brand'))
                     ->badge()
-                    ->sortable()
                     ->color('primary')
                     ->searchable(),
 
@@ -43,26 +43,19 @@ class StoresTable
                 TextColumn::make('franchise_number')
                     ->label(__('app.stores.franchise_number'))
                     ->searchable()
-                    ->sortable()
                     ->placeholder('—')
                     ->toggleable(),
 
                 TextColumn::make('city')
                     ->label(__('app.stores.city'))
-                    ->sortable()
                     ->searchable(),
 
-                TextColumn::make('project_type')
+                    TextColumn::make('project_type')
                     ->label(__('app.stores.project_type_short'))
                     ->badge()
-                    ->sortable()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'Nouveau' => 'success',
-                        'Corpo'   => 'info',
-                        'Reprise' => 'warning',
-                        'Vente'   => 'danger',
-                        default   => 'gray',
-                    }),
+                    ->color(fn (string|ProjectType|null $state): string =>
+                        ($state instanceof ProjectType ? $state : ProjectType::tryFrom((string) $state))?->color() ?? 'gray'
+                    ),
 
                 IconColumn::make('is_active')
                     ->label(__('app.stores.is_active'))
@@ -90,12 +83,7 @@ class StoresTable
 
                 SelectFilter::make('project_type')
                     ->label(__('app.stores.project_type'))
-                    ->options([
-                        'Nouveau' => 'Nouveau',
-                        'Corpo'   => 'Corpo',
-                        'Reprise' => 'Reprise',
-                        'Vente'   => 'Vente',
-                    ]),
+                    ->options(ProjectType::options()),
 
                 Filter::make('is_active')
                     ->label(__('app.stores.active_only'))
