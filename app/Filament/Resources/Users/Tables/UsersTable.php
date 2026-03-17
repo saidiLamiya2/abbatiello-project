@@ -129,15 +129,23 @@ class UsersTable
                 TrashedFilter::make(),
             ])
             ->actions([
-                EditAction::make(),
+                EditAction::make()
+                    ->visible(fn ($record) => auth()->user()->can('update', $record)),
                 DeleteAction::make()
-                    ->visible(fn () => auth()->user()->hasAnyRole(['super_admin', 'admin'])),
+                    ->visible(fn ($record) => auth()->user()->can('delete', $record)),
                 RestoreAction::make()
-                    ->visible(fn ($record) => auth()->user()->hasAnyRole(['super_admin', 'admin']) && $record->trashed()),
-            ])
+                    ->visible(fn ($record) => $record->trashed() && auth()->user()->can('restore', $record)),
+                            ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->using(function ($records) {
+                            $records->each(function ($record) {
+                                if (auth()->user()->can('delete', $record)) {
+                                    $record->delete();
+                                }
+                            });
+                        }),
                 ]),
             ]);
     }
