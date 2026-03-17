@@ -26,15 +26,13 @@ class StoresTable
                 if ($user->hasRole('manager')) {
                     $query->where('id', $user->store_id);
                 }
-                if ($user->hasRole('admin')) {
-                    $query->where('brand_id', $user->brand_id);
-                }
             })
             ->columns([
                 TextColumn::make('brand.tag')
                     ->label(__('app.stores.brand'))
                     ->badge()
                     ->color('primary')
+                    ->sortable()
                     ->searchable(),
 
                 TextColumn::make('name')
@@ -46,15 +44,18 @@ class StoresTable
                     ->label(__('app.stores.franchise_number'))
                     ->searchable()
                     ->placeholder('—')
+                    ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('city')
                     ->label(__('app.stores.city'))
+                    ->sortable()
                     ->searchable(),
 
                     TextColumn::make('project_type')
                     ->label(__('app.stores.project_type_short'))
                     ->badge()
+                    ->sortable()
                     ->color(fn (string|ProjectType|null $state): string =>
                         ($state instanceof ProjectType ? $state : ProjectType::tryFrom((string) $state))?->color() ?? 'gray'
                     ),

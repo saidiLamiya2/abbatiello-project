@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -14,14 +15,13 @@ class UserStatsWidget extends BaseWidget
         $user = auth()->user();
 
         // Base query scoped by role
+        // - super_admin and admin: all users (no scoping)
+        // - manager: only own store
+        // - employee: not shown on dashboard (widget hidden)
         $baseQuery = fn () => User::query()
             ->when(
-                $user->hasRole('manager'),
+                $user->hasRole(UserRole::Manager->value),
                 fn (Builder $q) => $q->where('store_id', $user->store_id)
-            )
-            ->when(
-                $user->hasRole('admin'),
-                fn (Builder $q) => $q->where('brand_id', $user->brand_id)
             );
 
         $totalActive   = (clone $baseQuery())->where('is_active', true)->count();
@@ -36,10 +36,10 @@ class UserStatsWidget extends BaseWidget
         ];
 
         // Active managers card — only for super_admin and admin
-        if ($user->hasAnyRole(['super_admin', 'admin'])) {
+        if ($user->hasAnyRole([UserRole::SuperAdmin->value, UserRole::Admin->value])) {
             $activeManagers = (clone $baseQuery())
                 ->where('is_active', true)
-                ->whereHas('roles', fn ($q) => $q->where('name', 'manager'))
+                ->whereHas('roles', fn ($q) => $q->where('name', UserRole::Manager->value))
                 ->count();
 
             $stats[] = Stat::make(__('app.users.stats.active_managers'), $activeManagers)

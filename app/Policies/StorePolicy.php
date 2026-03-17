@@ -18,14 +18,9 @@ class StorePolicy
             return false;
         }
 
-        // manager scoped to own store only
+        // Manager scoped to own store only
         if ($user->hasRole('manager')) {
             return $user->store_id === $store->id;
-        }
-
-        // admin scoped to own brand
-        if ($user->hasRole('admin')) {
-            return $user->brand_id === $store->brand_id;
         }
 
         return true;
@@ -46,10 +41,6 @@ class StorePolicy
             return $user->store_id === $store->id;
         }
 
-        if ($user->hasRole('admin')) {
-            return $user->brand_id === $store->brand_id;
-        }
-
         return true;
     }
 
@@ -57,10 +48,6 @@ class StorePolicy
     {
         if (! $user->hasPermissionTo('Delete:Store')) {
             return false;
-        }
-
-        if ($user->hasRole('admin')) {
-            return $user->brand_id === $store->brand_id;
         }
 
         return true;

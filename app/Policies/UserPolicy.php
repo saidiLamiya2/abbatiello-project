@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\User;
 
 class UserPolicy
@@ -17,14 +18,9 @@ class UserPolicy
             return false;
         }
 
-        // manager scoped to own store
+        // Manager scoped to own store
         if ($user->hasRole('manager')) {
             return $user->store_id === $model->store_id;
-        }
-
-        // admin scoped to own brand
-        if ($user->hasRole('admin')) {
-            return $user->brand_id === $model->brand_id;
         }
 
         return true;
@@ -41,12 +37,18 @@ class UserPolicy
             return false;
         }
 
-        if ($user->hasRole('manager')) {
-            return $user->store_id === $model->store_id;
+        // Nobody can edit a super_admin except another super_admin (handled by Gate::before)
+        if ($model->hasRole(UserRole::SuperAdmin->value)) {
+            return false;
         }
 
-        if ($user->hasRole('admin')) {
-            return $user->brand_id === $model->brand_id;
+        // Admin cannot edit another admin
+        if ($user->hasRole(UserRole::Admin->value) && $model->hasRole(UserRole::Admin->value)) {
+            return false;
+        }
+
+        if ($user->hasRole('manager')) {
+            return $user->store_id === $model->store_id;
         }
 
         return true;
@@ -63,17 +65,14 @@ class UserPolicy
             return false;
         }
 
-        // Cannot delete a user with a higher role
-        if ($model->hasRole('super_admin')) {
+        // Nobody can delete a super_admin
+        if ($model->hasRole(UserRole::SuperAdmin->value)) {
             return false;
         }
 
-        if ($user->hasRole('admin') && $model->hasRole('admin')) {
+        // Admin cannot delete another admin
+        if ($user->hasRole(UserRole::Admin->value) && $model->hasRole(UserRole::Admin->value)) {
             return false;
-        }
-
-        if ($user->hasRole('admin')) {
-            return $user->brand_id === $model->brand_id;
         }
 
         return true;

@@ -32,10 +32,11 @@ class UserForm
                             : null
                         )
                         ->dehydrated(true)
+                        ->disabled(fn () => auth()->user()->hasRole(UserRole::Manager->value))
                         ->options(function () {
-                            if (auth()->user()->hasRole(UserRole::Manager->value)) {
-                                return \App\Models\Brand::where('id', auth()->user()->brand_id)
-                                    ->pluck('name', 'id');
+                            $user = auth()->user();
+                            if ($user->hasRole(UserRole::Manager->value)) {
+                                return \App\Models\Brand::where('id', $user->brand_id)->pluck('name', 'id');
                             }
                             return \App\Models\Brand::pluck('name', 'id');
                         })
@@ -51,10 +52,11 @@ class UserForm
                             ? auth()->user()->store_id
                             : null
                         )
+                        ->disabled(fn () => auth()->user()->hasRole(UserRole::Manager->value))
                         ->options(function (callable $get) {
-                            if (auth()->user()->hasRole(UserRole::Manager->value)) {
-                                return \App\Models\Store::where('id', auth()->user()->store_id)
-                                    ->pluck('name', 'id');
+                            $user = auth()->user();
+                            if ($user->hasRole(UserRole::Manager->value)) {
+                                return \App\Models\Store::where('id', $user->store_id)->pluck('name', 'id');
                             }
                             $brandId = $get('brand_id');
                             return \App\Models\Store::when($brandId, fn ($q) => $q->where('brand_id', $brandId))

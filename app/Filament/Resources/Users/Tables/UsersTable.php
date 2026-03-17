@@ -26,9 +26,7 @@ class UsersTable
                 if ($user->hasRole('manager')) {
                     $query->where('store_id', $user->store_id);
                 }
-                if ($user->hasRole('admin')) {
-                    $query->where('brand_id', $user->brand_id);
-                }
+
             })
             ->columns([
                 TextColumn::make('brand.tag')
